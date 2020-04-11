@@ -4,31 +4,107 @@
     <div class="main">
       <p class="sign" align="center">Sign in</p>
       <form class="form1">
-        <input class="un " type="text" align="center" placeholder="Username" />
+        
+        <input class="un " type="text" align="center" placeholder="Username" v-model="usernameLogin" />
+        <input
+          class="pass"
+          type="password"
+          align="center"
+          placeholder="password"
+          v-model="passwordLogin"
+        />
+
+        <a class="submit" @click.prevent="login" align="center">Sign in</a>
+        <p class="forgot" align="center"><a href="#">Forgot Password?</a></p>
+        <p v-if="errorLogin" class="error">{{ errorLogin }}</p>
+
+        <input class="un " placeholder="first name" v-model="firstName" />
+        <input class="un " placeholder="last name" v-model="lastName" />
+        <input class="un " type="text" align="center" placeholder="Username" v-model="username" />
         <input
           class="pass"
           type="password"
           align="center"
           placeholder="Password"
+          v-model="password"
         />
-        <a class="submit" @click="message" align="center">Sign in</a>
-        <p class="forgot" align="center"><a href="#">Forgot Password?</a></p>
+        <a class="submit" @click.prevent="register" align="center">Register</a>
+        <p v-if="error" class="error">{{ error }}</p>
       </form>
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
 export default {
-  methods: {
-    message: () => {
-      alert("Coming Soon");
-    }
+  data() {
+    return {
+      firstName: "",
+      lastName: "",
+      username: "",
+      password: "",
+      usernameLogin: "",
+      passwordLogin: "",
+      error: "",
+      errorLogin: "",
+    };
+  },
+    methods: {
+      async register() {
+        this.error = '';
+        this.errorLogin = '';
+        if (!this.firstName || !this.lastName || !this.username || !this.password){
+          return;
+        }
+        try {
+          let response = await axios.post('/api/users', {
+           firstName: this.firstName,
+           lastName: this.lastName,
+           username: this.username,
+           password: this.password,
+          });
+          console.log(response.data.user)
+          this.$root.$data.user = response.data.user;
+      } catch (error) {
+        this.error = error.response.data.message;
+        this.$root.$data.user = null;
+      }
+    },
+    async login() {
+      console.log("Hello there login")
+      this.error = '';
+      this.errorLogin = '';
+      if (!this.usernameLogin || !this.passwordLogin){
+       return;
+      }
+      try {
+        let response = await axios.post('/api/users/login', {
+        username: this.usernameLogin,
+        password: this.passwordLogin,
+      });
+      console.log(response.data.user)
+      this.$root.$data.user = response.data.user;
+      } catch (error) {
+        this.errorLogin = "Error: " + error.response.data.message;
+         this.$root.$data.user = null;
+      }
+    },
   }
 };
 </script>
 
 <style scoped>
+
+.error {
+  margin-top: 20px;
+  display: inline;
+  padding: 5px 20px;
+  border-radius: 30px;
+  font-size: 10px;
+  background-color: #d9534f;
+  color: #fff;
+}
 h1 {
   border: 2px solid #f18904;
   padding: 10px;
@@ -45,7 +121,7 @@ body {
 .main {
   background-color: #ffffff;
   width: 400px;
-  height: 400px;
+  height: 780px;
   margin: 7em auto;
   border-radius: 1.5em;
   box-shadow: 0px 11px 35px 2px rgba(0, 0, 0, 0.14);

@@ -24,6 +24,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   name: "CartList",
   //props: {
@@ -32,16 +33,16 @@ export default {
   methods: {
     removeFromCart(product) {
       this.$root.$data.cart.splice(this.$root.$data.cart.indexOf(product), 1);
-      /*var num = product;
-      debugger
-      if(num > 1){
-        this.$root.$data.cart = this.$root.$data.cart.set(product[0],product[1] - 1);
-      }
-      else{
-        this.$root.$data.cart.delete(product[0]);
-      }*/
     }
-  }
+  },
+  async created() {
+    try {
+      let response = await axios.get('/api/users');
+      this.$root.$data.user = response.data.user;
+    } catch (error) {
+      this.$root.$data.user = null;
+    }
+  },
 };
 </script>
 

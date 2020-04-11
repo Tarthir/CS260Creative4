@@ -10,6 +10,7 @@ Vue.config.productionTip = false;
 let data = {
   products: [mockc, mockb],
   cart: [],
+  user: null,
 };
 
 new Vue({
